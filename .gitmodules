@@ -7,3 +7,6 @@
 [submodule "harmonypc-electron"]
 	path = harmonypc-electron
 	url = https://github.com/fellow99/harmonypc-electron.git
+[submodule "pi"]
+	path = pi
+	url = https://github.com/earendil-works/pi.git
