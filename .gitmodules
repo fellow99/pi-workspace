@@ -1,0 +1,9 @@
+[submodule "pi-desktop-hos"]
+	path = pi-desktop-hos
+	url = https://github.com/fellow99/pi-desktop-hos.git
+[submodule "pi-web"]
+	path = pi-web
+	url = https://github.com/agegr/pi-web.git
+[submodule "harmonypc-electron"]
+	path = harmonypc-electron
+	url = https://github.com/fellow99/harmonypc-electron.git
