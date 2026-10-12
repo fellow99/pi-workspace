@@ -10,3 +10,9 @@
 [submodule "pi"]
 	path = pi
 	url = https://github.com/earendil-works/pi.git
+[submodule "pi-desktop"]
+	path = pi-desktop
+	url = https://github.com/fellow99/pi-desktop.git
+[submodule "pi-desktop-website"]
+	path = pi-desktop-website
+	url = https://github.com/fellow99/pi-desktop-website.git
