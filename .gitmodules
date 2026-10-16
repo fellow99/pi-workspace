@@ -16,3 +16,9 @@
 [submodule "pi-desktop-website"]
 	path = pi-desktop-website
 	url = https://github.com/fellow99/pi-desktop-website.git
+[submodule "ohos-node-bridge"]
+	path = ohos-node-bridge
+	url = https://github.com/fellow99/ohos-node-bridge.git
+[submodule "pi-desktop-ark"]
+	path = pi-desktop-ark
+	url = https://github.com/fellow99/pi-desktop-ark.git
