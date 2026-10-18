@@ -28,7 +28,6 @@ yarn-error.log*
 
 /dist
 /harmonypc-electron-versions
-/ohos-node-runtime
 /_test
 
 .cache
