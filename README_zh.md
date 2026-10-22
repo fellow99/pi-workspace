@@ -8,7 +8,7 @@
 > [Pi Web](https://github.com/agegr/pi-web) 封装为桌面应用所需的全部工程汇聚到一处，共 **三种产品形态**：
 > **Pi Desktop**（Electron 桌面壳 · Windows / macOS / Linux）·
 > **Pi Desktop · Electron on HarmonyOS 版**（`pi-desktop-hos`）·
-> **Pi Desktop · HarmonyOS 版**（`pi-desktop-ark`，ArkWeb + `ohos-node-bridge` 提供的**进程内真 Node 运行时**）。
+> **Pi Desktop · HarmonyOS 版**（`pi-desktop-ark`，ArkWeb + `@fellow99/node-bridge` / `@fellow99/node-runtime` ohpm 包提供的**进程内真 Node 运行时**）。
 > 上游仓库、运行时与品牌物料以 **git submodule + 同级普通目录**并列，使本 workspace 的目录结构恰好还原各封装工程
 > 构建脚本所期望的兄弟目录布局（`../pi`、`../pi-web`、`../assets`、`../harmonypc-electron`）。
 
@@ -18,7 +18,7 @@
 
 `Pi` 是上游开源的可扩展 agent harness（MIT，[earendil-works/pi](https://github.com/earendil-works/pi)），提供
 CLI / RPC / JSON / SDK 四个集成入口；`Pi Web` 是它的社区浏览器界面（MIT，[agegr/pi-web](https://github.com/agegr/pi-web)），
-**一个 Node 进程同时提供 SPA 与 `/api/*`**，agent 就在该进程内创建。三个封装工程 + 一个运行时库把这一整套搬进桌面：
+**一个 Node 进程同时提供 SPA 与 `/api/*`**，agent 就在该进程内创建。三个封装工程把这一整套搬进桌面（HarmonyOS 版的 Node 运行时以两个 ohpm 包分发：`@fellow99/node-bridge` + `@fellow99/node-runtime`）：
 
 - **`pi-desktop`** —— Electron 桌面壳（Windows / macOS / Linux），Electron **43.7.9**：主进程**进程内**承载
   `pi-web` 的 Next 服务器（含 agent 与 `/api/*`），渲染层同源加载官方 Pi Web UI。
@@ -26,11 +26,12 @@ CLI / RPC / JSON / SDK 四个集成入口；`Pi Web` 是它的社区浏览器界
   `harmonypc-electron` 的 Electron-on-鸿蒙运行时（Electron **37.2.3** / Node **22.17.0**），打包为可签名分发的 **HAP**。
 - **`pi-desktop-ark`** —— **Pi Desktop · HarmonyOS 版**：同一产品的**无 Chromium / 无 Electron** 形态 ——
   ArkTS 宿主 + **ArkWeb** 加载本地 `pi-web` 服务，而该服务跑在**应用进程内的真 Node.js 运行时**上
-  （`ohos-node-bridge`：`dlopen` + `node::Start`）。包体更小、用系统 WebView、不依赖 Electron 运行时；
-  功能目标是与 Electron on HarmonyOS 版对齐。
-- **`ohos-node-bridge`** —— **HarmonyOS 版背后的运行时库**（`@fellow99/node-bridge`：可发布到 ohpm 的 ArkTS
-  HAR + NAPI 引导件）。它**不是应用、也不是版别**，而是让任意鸿蒙应用能在自己进程内托管 Node 的那一块；
-  唯一在册消费方是 `pi-desktop-ark`。
+  （`@fellow99/node-bridge` + `@fellow99/node-runtime`：`dlopen` + `node::Start`）。包体更小、用系统 WebView、
+  不依赖 Electron 运行时；功能目标是与 Electron on HarmonyOS 版对齐。
+- **`@fellow99/node-bridge` / `@fellow99/node-runtime`** —— **HarmonyOS 版背后的运行时包**（ArkTS HAR + NAPI
+  引导件 + 独立的 Node 引擎包；均已上架 OpenHarmony ohpm 中心仓，源码：[github.com/fellow99/ohos-node-bridge](https://github.com/fellow99/ohos-node-bridge)）。
+  它们**不是应用、也不是版别**，而是让任意鸿蒙应用能在自己进程内托管 Node 的那两块；唯一在册消费方是
+  `pi-desktop-ark`（常规 ohpm 依赖，无需旁路源码目录）。
 
 各封装只做**装配**：UI 100% 复用上游，不 fork、不改上游源码（依据：`pi-desktop/docs/工程规划.md` §1.1–§1.2、
 `pi-desktop-hos/docs/工程规划.md` §1.1–§1.2、`pi-desktop-ark/docs/000-工程规划.md`）。补丁按**版别**计：桌面壳
@@ -48,7 +49,6 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 ├── pi-desktop/                     # [submodule] Electron 桌面壳（Windows / macOS / Linux）
 ├── pi-desktop-hos/                 # [submodule] Pi Desktop · Electron on HarmonyOS 版（HAP）
 ├── pi-desktop-ark/                 # [submodule] Pi Desktop · HarmonyOS 版（ArkWeb + 进程内 Node，HAP）
-├── ohos-node-bridge/               # [submodule] HarmonyOS 版内嵌的 Node 运行时库
 ├── pi-desktop-website/             # [submodule] 三个封装的产品官网（纯静态双页站点）
 ├── harmonypc-electron/             # [submodule] Electron-on-鸿蒙运行时（Electron 37.2.3 / Node 22.17.0）
 ├── assets/                         # （普通目录）品牌物料唯一来源：logo.* + screenshots/
@@ -65,7 +65,7 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 | `pi-desktop` | Electron 桌面壳（Windows / macOS / Linux） | — |
 | `pi-desktop-hos` | **Pi Desktop · Electron on HarmonyOS 版**（HAP） | — |
 | `pi-desktop-ark` | **Pi Desktop · HarmonyOS 版**（HAP） | — |
-| `ohos-node-bridge` | 进程内 Node 运行时库（`@fellow99/node-bridge`） | `pi-desktop-ark` |
+| `@fellow99/node-bridge` + `@fellow99/node-runtime`（ohpm） | 进程内 Node 运行时包（源码：`ohos-node-bridge`） | `pi-desktop-ark` |
 | `pi-desktop-website` | 三个封装的产品官网 | — |
 | `harmonypc-electron` | Electron-on-鸿蒙运行时（原生 SO + ArkTS 外壳） | 仅 `pi-desktop-hos` |
 | `assets` | **品牌物料的唯一来源**：各封装的应用图标 / 窗口图标 / 状态栏字形 / 页面 Logo，以及官网的 Logo 与截图 | 全部封装 + 官网 |
@@ -103,7 +103,7 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 壳（`pi-desktop`，以及跑在 Electron-on-鸿蒙运行时上的 `pi-desktop-hos`）里 agent 与 `/api/*` 位于 Electron 主进程内；
 在 HarmonyOS 版里它们位于**鸿蒙应用进程自身**（ArkWeb + 内嵌 Node）。两者都没有 CORS、没有自定义协议、没有登录页、
 上游源码零改动。差异集中在运行时与平台接入（运行时版本、打包形态、网络绑定、平台能力缺口），以各封装自己的 README 与
-`docs/工程规划.md` 为准；HarmonyOS 版的运行时契约见 `ohos-node-bridge/docs/000-工程规划.md` §6。
+`docs/工程规划.md` 为准；HarmonyOS 版的运行时契约见 [`ohos-node-bridge` `docs/000-工程规划.md`](https://github.com/fellow99/ohos-node-bridge/blob/main/docs/000-工程规划.md) §6。
 
 ## Submodule 清单
 
@@ -116,7 +116,6 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 | `pi-desktop` | https://github.com/fellow99/pi-desktop.git |
 | `pi-desktop-hos` | https://github.com/fellow99/pi-desktop-hos.git |
 | `pi-desktop-ark` | https://github.com/fellow99/pi-desktop-ark.git |
-| `ohos-node-bridge` | https://github.com/fellow99/ohos-node-bridge.git |
 | `pi-desktop-website` | https://github.com/fellow99/pi-desktop-website.git |
 | `harmonypc-electron` | https://github.com/fellow99/harmonypc-electron.git |
 
@@ -140,7 +139,7 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | `pi-desktop` | 版本 **0.11.1**；Windows 打包态端到端已实测（进程内宿主 / 首屏 / 产物引导 / 品牌化 / 终端 PTY / 原生通知 / 安装-启动-卸载 ✅，见 `docs/构建验证记录.md` 轮次 1–2）；**macOS / Linux 待验证**；系统托盘的视觉呈现 ⬜ 未专项取证（`docs/桌面能力清单.md`） |
 | `pi-desktop-hos` · **Electron on HarmonyOS 版** | 版本 **0.11.1** / `versionCode` **1101**；**已构建、已签名、已真机验证**（HarmonyOS 6.1.0.135 / API 24，见 `docs/真机验证记录.md`）；能力边界见 `docs/鸿蒙环境能力清单-v0.11.1.md` |
 | `pi-desktop-ark` · **HarmonyOS 版** | 骨架 + Phase 1 能力已真机可用：进程内 Node `v24.2.0`、进程内 Next 服务、ArkWeb 前端、文件信箱宿主桥、权限/选择器/通知；真机 HUAWEI MateBook Pro（`HAD-W24`，API 26）。能力记录见 `docs/001-能力复刻评估.md` |
-| `ohos-node-bridge` | 运行时库 `@fellow99/node-bridge` **0.1.0**：`dlopen` + `node::Start` 引导、宿主能力桥、载荷引导与入口解析、ELF+SHA-256 投放门禁、自检端点；由 `pi-desktop-ark` 消费 |
+| 运行时包 | `@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**，均已上架 OpenHarmony ohpm 中心仓（2026-10-22）；`pi-desktop-ark` 以常规 ohpm 依赖消费 |
 | 上游改动 | 桌面壳**必需补丁 0 条**、Electron on HarmonyOS 版 **2 条**已登记、HarmonyOS 版 **5** 条幂等补丁文件（`pi-desktop-ark/patches/v0.12.1/`）——均不改上游源码 |
 | `pi-desktop-website` | 纯静态双页站点（`index.html` / `index_zh.html`，无框架、零外部请求），经 GitHub Actions 部署到 GitHub Pages |
 | 本仓库 | 双语 README（`README_zh.md` 原文 / `README.md` 译文）+ MIT `LICENSE`；`assets/` 与 `harmonypc-electron-versions/` 为本地普通目录，未入库 |

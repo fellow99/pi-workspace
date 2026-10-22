@@ -9,7 +9,7 @@
 > platforms, in **three** product forms:
 > **Pi Desktop** (Electron shell · Windows / macOS / Linux) ·
 > **Pi Desktop · Electron on HarmonyOS Edition** (`pi-desktop-hos`) ·
-> **Pi Desktop · HarmonyOS Edition** (`pi-desktop-ark`, ArkWeb + a real in-process Node runtime from `ohos-node-bridge`).
+> **Pi Desktop · HarmonyOS Edition** (`pi-desktop-ark`, ArkWeb + a real in-process Node runtime from the `@fellow99/node-bridge` + `@fellow99/node-runtime` ohpm packages).
 > The upstream repositories, the two runtimes and the brand material sit side by side as **git submodules plus plain
 > sibling directories**, so the workspace layout reproduces the exact sibling-directory structure each wrapper's build
 > scripts expect (`../pi`, `../pi-web`, `../assets`, `../harmonypc-electron`).
@@ -21,8 +21,8 @@
 `Pi` is an upstream open-source, extensible agent harness (MIT, [earendil-works/pi](https://github.com/earendil-works/pi))
 with four integration entry points — CLI / RPC / JSON / SDK. `Pi Web` is its community browser UI (MIT,
 [agegr/pi-web](https://github.com/agegr/pi-web)) where **a single Node process serves both the SPA and `/api/*`**, and
-the agent is created inside that process. Three wrapper projects plus one runtime library move this whole stack onto
-the desktop:
+the agent is created inside that process. Three wrapper projects move this whole stack onto the desktop
+(the HarmonyOS Edition's Node runtime ships as two ohpm packages, `@fellow99/node-bridge` + `@fellow99/node-runtime`):
 
 - **`pi-desktop`** — an Electron desktop shell (Windows / macOS / Linux), Electron **43.7.9**: the main process hosts
   `pi-web`'s Next server (agent and `/api/*` included) **in-process**, and the renderer loads the official Pi Web UI
@@ -32,11 +32,13 @@ the desktop:
   signable, distributable **HAP**.
 - **`pi-desktop-ark`** — **Pi Desktop · HarmonyOS Edition**: the same product **without Chromium or Electron** — an
   ArkTS host whose **ArkWeb** view loads the local `pi-web` server, which runs on a **real Node.js runtime embedded in
-  the app process** (`ohos-node-bridge`: `dlopen` + `node::Start`). Smaller payload, system WebView, no Electron
-  runtime; functional target is parity with the Electron on HarmonyOS Edition.
-- **`ohos-node-bridge`** — **the runtime library behind the HarmonyOS Edition** (`@fellow99/node-bridge`: an
-  ohpm-publishable ArkTS HAR + NAPI loader). It is **not** an app and **not** an edition — it is the piece that lets any
-  HarmonyOS application host Node in-process. Its only registered consumer is `pi-desktop-ark`.
+  the app process** (`@fellow99/node-bridge` + `@fellow99/node-runtime`: `dlopen` + `node::Start`). Smaller payload,
+  system WebView, no Electron runtime; functional target is parity with the Electron on HarmonyOS Edition.
+- **`@fellow99/node-bridge` / `@fellow99/node-runtime`** — **the runtime packages behind the HarmonyOS Edition**
+  (an ArkTS HAR + NAPI loader, plus the Node engine as a separate HAR; both published on the OpenHarmony ohpm registry,
+  source: [github.com/fellow99/ohos-node-bridge](https://github.com/fellow99/ohos-node-bridge)). They are **not** an app
+  and **not** an edition — they are the pieces that let any HarmonyOS application host Node in-process. Their only
+  registered consumer is `pi-desktop-ark` (regular ohpm dependency, no side-by-side checkout needed).
 
 The wrappers only **assemble**: the UI is reused 100% from upstream and no upstream source is forked (see
 `pi-desktop/docs/工程规划.md` §1.1–§1.2, `pi-desktop-hos/docs/工程规划.md` §1.1–§1.2,
@@ -56,7 +58,6 @@ pi-workspace/                       # this repo — submodule container (the par
 ├── pi-desktop/                     # [submodule] Electron desktop shell (Windows / macOS / Linux)
 ├── pi-desktop-hos/                 # [submodule] Pi Desktop · Electron on HarmonyOS Edition (HAP)
 ├── pi-desktop-ark/                 # [submodule] Pi Desktop · HarmonyOS Edition (ArkWeb + in-process Node, HAP)
-├── ohos-node-bridge/               # [submodule] Node runtime library embedded by the HarmonyOS Edition
 ├── pi-desktop-website/             # [submodule] product website of the three wrappers (static, two pages)
 ├── harmonypc-electron/             # [submodule] Electron-on-HarmonyOS runtime (Electron 37.2.3 / Node 22.17.0)
 ├── assets/                         # (plain dir) single source of brand material: logo.* + screenshots/
@@ -73,7 +74,7 @@ pi-workspace/                       # this repo — submodule container (the par
 | `pi-desktop` | Electron desktop shell (Windows / macOS / Linux) | — |
 | `pi-desktop-hos` | **Pi Desktop · Electron on HarmonyOS Edition** (HAP) | — |
 | `pi-desktop-ark` | **Pi Desktop · HarmonyOS Edition** (HAP) | — |
-| `ohos-node-bridge` | In-process Node runtime library (`@fellow99/node-bridge`) | `pi-desktop-ark` |
+| `@fellow99/node-bridge` + `@fellow99/node-runtime` (ohpm) | In-process Node runtime packages (source: `ohos-node-bridge`) | `pi-desktop-ark` |
 | `pi-desktop-website` | Product website of the three wrappers | — |
 | `harmonypc-electron` | Electron-on-HarmonyOS runtime (native SOs + ArkTS shell) | `pi-desktop-hos` only |
 | `assets` | **The single source of brand material**: app icons / window icons / status-bar glyphs / page logo for the wrappers, plus the website's logo and screenshots | all wrappers + the website |
@@ -118,7 +119,7 @@ runtime) the agent and `/api/*` live inside the Electron main process; on the Ha
 HarmonyOS app process itself (ArkWeb + embedded Node). Either way there is no CORS, no custom protocol, no login page,
 and zero upstream source changes. Differences are confined to the runtime and platform integration (runtime version,
 packaging form, network binding, platform capability gaps) and are documented by each wrapper's own README and
-`docs/工程规划.md`; the HarmonyOS Edition's runtime contract lives in `ohos-node-bridge/docs/000-工程规划.md` §6.
+`docs/工程规划.md`; the HarmonyOS Edition's runtime contract lives in [`ohos-node-bridge` `docs/000-工程规划.md`](https://github.com/fellow99/ohos-node-bridge/blob/main/docs/000-工程规划.md) §6.
 
 ## Submodules
 
@@ -131,7 +132,6 @@ All entries are recorded in [`.gitmodules`](.gitmodules):
 | `pi-desktop` | https://github.com/fellow99/pi-desktop.git |
 | `pi-desktop-hos` | https://github.com/fellow99/pi-desktop-hos.git |
 | `pi-desktop-ark` | https://github.com/fellow99/pi-desktop-ark.git |
-| `ohos-node-bridge` | https://github.com/fellow99/ohos-node-bridge.git |
 | `pi-desktop-website` | https://github.com/fellow99/pi-desktop-website.git |
 | `harmonypc-electron` | https://github.com/fellow99/harmonypc-electron.git |
 
@@ -156,7 +156,7 @@ To advance the pinned commits, run `git submodule update --remote` and commit th
 | `pi-desktop` | Version **0.11.1**; packaged-state end-to-end measured on Windows (in-process host / first screen / artifact bootstrap / branding / terminal PTY / native notifications / install-launch-uninstall ✅, see `docs/构建验证记录.md` rounds 1–2); **macOS / Linux still unverified**; visual presentation of the system tray ⬜ not yet separately verified (`docs/桌面能力清单.md`) |
 | `pi-desktop-hos` · **Electron on HarmonyOS Edition** | Version **0.11.1** / `versionCode` **1101**; **built, signed and verified on device** (HarmonyOS 6.1.0.135 / API 24, see `docs/真机验证记录.md`); capability boundaries in `docs/鸿蒙环境能力清单-v0.11.1.md` |
 | `pi-desktop-ark` · **HarmonyOS Edition** | Skeleton + Phase 1 capabilities on device: in-process Node `v24.2.0`, in-process Next server, ArkWeb UI, file-mailbox host bridge, permissions/pickers/notifications; real-device verified on HUAWEI MateBook Pro (`HAD-W24`, API 26). Capability record: `docs/001-能力复刻评估.md` |
-| `ohos-node-bridge` | Runtime library `@fellow99/node-bridge` **0.1.0**: `dlopen` + `node::Start` bootstrap, host bridge, payload bootstrap/entry resolver, ELF+SHA-256 provisioning gates, self-check endpoints; consumed by `pi-desktop-ark` |
+| Runtime packages | `@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**, both published on the OpenHarmony ohpm registry (2026-10-22); consumed by `pi-desktop-ark` as a regular ohpm dependency |
 | Upstream changes | **0** required patches in the desktop shell, **2** registered patches in the Electron on HarmonyOS Edition, **5** idempotent patch files in the HarmonyOS Edition (`pi-desktop-ark/patches/v0.12.1/`) — no upstream source is forked |
 | `pi-desktop-website` | Static two-page site (`index.html` / `index_zh.html`, no framework, zero external requests), deployed to GitHub Pages via GitHub Actions |
 | This repo | Bilingual README (`README_zh.md` original / `README.md` translation) + MIT `LICENSE`; `assets/` and `harmonypc-electron-versions/` are local plain directories, untracked |
