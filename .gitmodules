@@ -19,3 +19,6 @@
 [submodule "pi-desktop-ark"]
 	path = pi-desktop-ark
 	url = https://github.com/fellow99/pi-desktop-ark.git
+[submodule "pi-desktop-android"]
+	path = pi-desktop-android
+	url = https://github.com/fellow99/pi-desktop-android.git
