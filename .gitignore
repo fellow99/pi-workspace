@@ -29,6 +29,7 @@ yarn-error.log*
 /dist
 /harmonypc-electron-versions
 /_test
+/build
 
 .cache
 .deveco
@@ -37,3 +38,4 @@ yarn-error.log*
 .omo
 .codegraph
 .playwright-mcp
+.pi
