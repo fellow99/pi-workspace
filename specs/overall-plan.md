@@ -299,7 +299,7 @@ assemble-payload（pi-web 产物 + 6 补丁 + 8 扩展 + jitless + config + 品�
 |---|---|---|---|
 | Q1 | Ark 应用名是否统一为 `Pi Desktop` | 品牌一致性 | 产品定名；更新 `string.json` + 013 |
 | Q2 | Ark 页面 Logo 的 SVG 接入方案 | 品牌完整性 | 副本引用 `/icons/logo.svg` 或引入光栅化器 |
-| Q3 | HOS 缺失的项目级 specs 文档 | 文档完整性 | 按父工程模板补齐（ARCHITECTURE/TECH/STRUCTURE/overall-*） |
+| Q3 | HOS 缺失的项目级 specs 文档 | 文档完整性 | ✅ 2026-10-31 已补齐（`pi-desktop-hos/specs/` 的 constitution/ARCHITECTURE/TECH/STRUCTURE/overall-*） |
 | Q4 | Android 是否独立 204/205/206 插件模块 | 编号对齐 | 视后续拆分需要；当前并入 106 |
 | Q5 | Desktop `201-plugin-runtime` 是否要做 | 可选功能 | 产品决策；未决策前保持 ⬜ |
 | Q6 | 鸿蒙两版是否引入 GitHub Actions 构建 | 可复现/发布 | 当前本地构建；如引入再评估 012 适用性 |
