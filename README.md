@@ -50,8 +50,8 @@ The wrappers only **assemble**: the UI is reused 100% from upstream and no upstr
 `pi-desktop/docs/工程规划.md` §1.1–§1.2, `pi-desktop-hos/docs/工程规划.md` §1.1–§1.2,
 `pi-desktop-ark/docs/000-工程规划.md`). Patch policy is counted **per edition**: the desktop shell ships **0** patches,
 the Electron on HarmonyOS Edition **2** registered patches, and the HarmonyOS Edition applies its `pi-web` patches as
-idempotent, reversible files (`pi-desktop-ark/patches/v0.14.1/`, **6** at v0.14.1), and the Android Edition applies the
-parallel **6** idempotent patches in `pi-desktop-android/patches/v0.14.1/`.
+idempotent, reversible files (`pi-desktop-ark/patches/v0.14.2/`, **6** at v0.14.2), and the Android Edition applies the
+parallel **6** idempotent patches in `pi-desktop-android/patches/v0.14.2/`.
 
 This repository itself contains no product code — it is the **container** that holds these projects, so every sibling
 directory reference resolves as soon as the workspace is cloned.
@@ -164,11 +164,11 @@ To advance the pinned commits, run `git submodule update --remote` and commit th
 
 | Item | Status |
 |---|---|
-| Upstream baseline | `pi` **v1.4.0** + `pi-web` **v0.14.1** (tags `v1.4.0`/`v0.14.1`) consumed by all four editions; pinned commits recorded per wrapper (`upstream.lock.json` / `runtime.lock.json`) |
-| `pi-desktop` | Version **0.14.1**; packaged-state end-to-end measured on Windows (in-process host / first screen / artifact bootstrap / branding / terminal PTY / native notifications / install-launch-uninstall ✅, see `docs/构建验证记录.md`); **macOS / Linux still unverified** |
-| `pi-desktop-hos` · **Electron on HarmonyOS Edition** | Version **0.14.1** / `versionCode` **1401**; built this round as an **unsigned HAP** (device verification skipped — no device attached); historical on-device verification (HarmonyOS API 26, see `docs/真机验证记录.md`); tag `v0.14.1` |
-| `pi-desktop-ark` · **HarmonyOS Edition** | Version **0.14.1** / `versionCode` **1401**; in-process Node `v24.2.0`, in-process Next server, ArkWeb UI, host bridges, permissions/pickers/notifications; built this round as an **unsigned HAP**; historical Level-0 real-device verification (2-in-1 / tablet / phone), see `docs/001-能力复刻评估.md`; tag `v0.14.1` |
-| `pi-desktop-android` · **Android Edition** | Version **0.14.1** / `versionCode` **1401**; in-process Node **26.13.0** (small-ICU) via Maven Central `node-runtime`, system WebView, 6 idempotent patches; tag `v0.14.1` builds a **signed APK and publishes a GitHub Release** via `.github/workflows/build-release.yml`; **0.14.1 device-verified on MIX**: Node 26.13.0, payload SHA matches local build, patch roots + picker contract, text conversation (deepseek-v4-pro) and vision image analysis (deepseek-flash), see `pi-desktop-android/docs/安卓环境能力清单-0.14.1.md` |
+| Upstream baseline | `pi` **v1.5.0** + `pi-web` **v0.14.2** (tags `v1.5.0`/`v0.14.2`) consumed by all four editions; pinned commits recorded per wrapper (`upstream.lock.json` / `runtime.lock.json`) |
+| `pi-desktop` | Version **0.14.2**; packaged-state end-to-end measured on Windows (in-process host / first screen / artifact bootstrap / branding / terminal PTY / native notifications / install-launch-uninstall ✅, see `docs/构建验证记录.md`); **macOS / Linux still unverified** |
+| `pi-desktop-hos` · **Electron on HarmonyOS Edition** | Version **0.14.2** / `versionCode` **1402**; built this round as a **signed HAP** and verified on a real HarmonyOS device (boot / render / version badge / text chat); historical on-device verification (HarmonyOS API 26, see `docs/真机验证记录.md`); tag `v0.14.2` |
+| `pi-desktop-ark` · **HarmonyOS Edition** | Version **0.14.2** / `versionCode` **1402**; in-process Node `v24.2.0`, in-process Next server, ArkWeb UI, host bridges, permissions/pickers/notifications; built this round as a **signed HAP**, verified on a real HarmonyOS device (boot / render / version badge / text chat); historical Level-0 real-device verification (2-in-1 / tablet / phone), see `docs/001-能力复刻评估.md`; tag `v0.14.2` |
+| `pi-desktop-android` · **Android Edition** | Version **0.14.2** / `versionCode` **1402**; in-process Node **26.13.0** (small-ICU) via Maven Central `node-runtime`, system WebView, 6 idempotent patches; tag `v0.14.2` builds a **signed APK and publishes a GitHub Release** via `.github/workflows/build-release.yml`; **0.14.2 device-verified on MIX**: Node 26.13.0, payload SHA matches local build, patch roots + picker contract, text conversation (deepseek-v4-pro) and vision image analysis (deepseek-flash), see `pi-desktop-android/docs/安卓环境能力清单-0.14.2.md` |
 | Runtime packages | HarmonyOS: `@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0** (ohpm); Android: `aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0** (Maven Central) |
 | Upstream changes | **0** patches in the desktop shell · **2** registered patches in the Electron on HarmonyOS Edition · **6** idempotent patches in the HarmonyOS Edition · **6** in the Android Edition — no upstream source is forked |
 | `pi-desktop-website` | Static two-page site (`index.html` / `index_zh.html`, no framework, zero external requests), deployed to GitHub Pages via GitHub Actions |
@@ -207,7 +207,7 @@ A simplified, status-icon view across the four editions. Legend: ✅ implemented
 | System tray | ✅ | ➖ | ❌ | ❌ |
 | External links → system browser | ✅ | ✅ | ✅ | ✅ |
 | Project trust gate | ✅ | ✅ | ✅ | ✅ |
-| Patch count vs. pi-web v0.14.1 | 0 | 6 | 2 | 6 |
+| Patch count vs. pi-web v0.14.2 | 0 | 6 | 2 | 6 |
 
 ## License
 
