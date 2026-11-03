@@ -150,7 +150,7 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | `pi-desktop` | 版本 **0.14.1**；Windows 打包态端到端已实测（进程内宿主 / 首屏 / 产物引导 / 品牌化 / 终端 PTY / 原生通知 / 安装-启动-卸载 ✅，见 `docs/构建验证记录.md`）；**macOS / Linux 待验证**；系统托盘视觉呈现 ⬜ 未专项取证 |
 | `pi-desktop-hos` · **Electron on HarmonyOS 版** | 版本 **0.14.1** / `versionCode` **1401**；本轮构建为 **unsigned HAP**（本机无真机，跳过真机验证）；历史真机验证（鸿蒙 API 26，见 `docs/真机验证记录.md`）；tag `v0.14.1` |
 | `pi-desktop-ark` · **HarmonyOS 版** | 版本 **0.14.1** / `versionCode` **1401**；进程内 Node `v24.2.0`、进程内 Next 服务、ArkWeb 前端、宿主桥、权限/选择器/通知；本轮构建为 **unsigned HAP**；历史第 0 级真机已验证（2in1 / 平板 / 手机），见 `docs/001-能力复刻评估.md`；tag `v0.14.1` |
-| `pi-desktop-android` · **Android 版** | 版本 **0.14.1** / `versionCode` **1401**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、6 条幂等补丁；tag `v0.14.1` 经 `.github/workflows/build-release.yml` 构建**签名 APK 并发布 GitHub Release** |
+| `pi-desktop-android` · **Android 版** | 版本 **0.14.1** / `versionCode` **1401**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、6 条幂等补丁；tag `v0.14.1` 经 `.github/workflows/build-release.yml` 构建**签名 APK 并发布 GitHub Release**；**0.14.1 已真机 MIX 验证**：Node 26.13.0、载荷 SHA 与本地一致、补丁 sandbox 根 + 选择器契约、文本对话（deepseek-v4-pro）与图片分析（deepseek-flash），见 `pi-desktop-android/docs/安卓环境能力清单-0.14.1.md` |
 | 运行时包 | 鸿蒙：`@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**（ohpm）；安卓：`aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0**（Maven Central） |
 | 上游改动 | 桌面壳 **0 条** · Electron on HarmonyOS 版 **2 条**已登记 · HarmonyOS 版 **6 条** · Android 版 **6 条**幂等补丁 —— 均不 fork 上游源码 |
 | `pi-desktop-website` | 纯静态双页站点（`index.html` / `index_zh.html`，无框架、零外部请求），经 GitHub Actions 部署到 GitHub Pages |
