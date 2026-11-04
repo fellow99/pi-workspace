@@ -1,6 +1,6 @@
 # 101 — 版本更新：0.15.0（version）跨工程功能规格
 
-> **Module:** version ｜ **Status:** In Progress ｜ **Last Updated:** 2026-11-05
+> **Module:** version ｜ **Status:** Verified（四端构建 + 桌面/鸿蒙/安卓真机验证） ｜ **Last Updated:** 2026-11-04
 > **上游基线:** `pi` v1.5.0（`f9a26365568127461c47a07a37dcb42c140a3ac5`，**与 0.14.2 持平不变**）· `pi-web` v0.15.0（`f130910abf662b506b2ef2f475fc21a2fe57badc`）
 > **发布 tag:** `v0.15.0`
 > **适用范围:** `pi-desktop` · `pi-desktop-hos` · `pi-desktop-ark` · `pi-desktop-android` · `pi-desktop-website`
@@ -45,7 +45,12 @@ tag 矩阵；补丁集版本目录（`patches/v0.15.0/`）原样迁移与幂等�
 zip；HOS 签名 HAP；Ark 签名 HAP；Android debug/release APK）；网站 README/页面更新；父/子 README 更新；
 发布 tag；**桌面端**基本功能与环境能力测试。
 
-**不包含**：修改上游源码（只允许幂等补丁）；鸿蒙 / 安卓端真机测试（**用户指定暂缓**，仅完成构建产物）。
+**不包含**：修改上游源码（只允许幂等补丁）。
+
+> **范围变更（执行中）**：原计划「鸿蒙 / 安卓真机测试暂缓」在执行期间被解除——用户先后接通鸿蒙
+> （`3QC0226526001227`）与安卓（`cd3fac61`）真机并要求一并测试，故本轮**四端均做了真机验证**，
+> 证据见 `pi-desktop/logs/20261104-1/TEST_REPORT.md`、`pi-desktop-hos/docs/真机验证记录.md`（轮次 8）、
+> `pi-desktop-ark/docs/003-真机验证记录-0.15.0.md`、`pi-desktop-android/docs/002-真机验证记录.md`（0.15.0 轮）。
 
 ---
 
@@ -110,7 +115,8 @@ zip；HOS 签名 HAP；Ark 签名 HAP；Android debug/release APK）；网站 RE
 - 上游 tag/分支在各仓库可用（本机已固化 `Branch_v1.5.0` / `Branch_v0.15.0`，用户手动完成）。
 - 各子工程本地 main 已 fast-forward 到 origin/main（= v0.14.2 发布线顶端）后开工；本轮发布提交
   继续落在 main 上（**Git 分支不改动**）。
-- 鸿蒙真机 / 安卓真机测试**暂缓**（用户指定）；HOS/Ark 仅要求构建出签名 HAP，Android 仅要求构建 APK。
+- 鸿蒙真机（HAD-W32/API 26）与安卓真机（MIX/Android 8.0.0）**本轮均可用并已实测**；两端无头自动化
+  限制（原生文件选择器不可达、WebView/ArkWeb 需经调试通道）已在各自验证记录中说明。
 - 桌面端测试本机执行（构建/冒烟以独立进程跑，不杀自身）。
 - 测试用的 DeepSeek API Key 由用户给定，**不落盘**。
 - HOS/Ark 的 `build-profile.json5` 本地签名材料由 DevEco 自动签名写入 → **仅保留本地，不提交**。

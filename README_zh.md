@@ -43,7 +43,7 @@ CLI / RPC / JSON / SDK 四个集成入口；`Pi Web` 是它的社区浏览器界
 各封装只做**装配**：UI 100% 复用上游，不 fork、不改上游源码（依据：`pi-desktop/docs/工程规划.md` §1.1–§1.2、
 `pi-desktop-hos/docs/工程规划.md` §1.1–§1.2、`pi-desktop-ark/docs/000-工程规划.md`）。补丁按**版别**计：桌面壳
 **0 条**、Electron on HarmonyOS 版 **2 条**已登记补丁、HarmonyOS 版以幂等可逆的补丁文件施加
-（`pi-desktop-ark/patches/v0.14.2/`，v0.14.2 时为 **6** 条），Android 版在 `pi-desktop-android/patches/v0.14.2/` 施加同构的 **6** 条幂等补丁。
+（`pi-desktop-ark/patches/v0.15.0/`，v0.15.0 时为 **6** 条），Android 版在 `pi-desktop-android/patches/v0.15.0/` 施加同构的 **6** 条幂等补丁。
 
 本仓库自身不含产品代码 —— 它是承载这些工程的**容器**，让所有兄弟目录引用在 clone 下来时天然成立。
 
@@ -146,11 +146,11 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 
 | 项 | 现状 |
 |---|---|
-| 上游基线 | 四版共同消费 `pi` **v1.5.0** + `pi-web` **v0.14.2**（tags `v1.5.0`/`v0.14.2`）；各封装以 `upstream.lock.json` / `runtime.lock.json` 记录锁定 |
-| `pi-desktop` | 版本 **0.14.2**；Windows 打包态端到端已实测（进程内宿主 / 首屏 / 产物引导 / 品牌化 / 终端 PTY / 原生通知 / 安装-启动-卸载 ✅，见 `docs/构建验证记录.md`）；**macOS / Linux 待验证**；系统托盘视觉呈现 ⬜ 未专项取证 |
-| `pi-desktop-hos` · **Electron on HarmonyOS 版** | 版本 **0.14.2** / `versionCode` **1402**；本轮构建为**签名 HAP** 并在鸿蒙真机验证（启动/渲染/版本徽标/文本对话）（本机无真机，跳过真机验证）；历史真机验证（鸿蒙 API 26，见 `docs/真机验证记录.md`）；tag `v0.14.2` |
-| `pi-desktop-ark` · **HarmonyOS 版** | 版本 **0.14.2** / `versionCode` **1402**；进程内 Node `v24.2.0`、进程内 Next 服务、ArkWeb 前端、宿主桥、权限/选择器/通知；本轮构建为**签名 HAP** 并在鸿蒙真机验证（启动/渲染/版本徽标/文本对话）；历史第 0 级真机已验证（2in1 / 平板 / 手机），见 `docs/001-能力复刻评估.md`；tag `v0.14.2` |
-| `pi-desktop-android` · **Android 版** | 版本 **0.14.2** / `versionCode` **1402**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、6 条幂等补丁；tag `v0.14.2` 经 `.github/workflows/build-release.yml` 构建**签名 APK 并发布 GitHub Release**；**0.14.2 已真机 MIX 验证**：Node 26.13.0、载荷 SHA 与本地一致、补丁 sandbox 根 + 选择器契约、文本对话（deepseek-v4-pro）与图片分析（deepseek-flash），见 `pi-desktop-android/docs/安卓环境能力清单-0.14.2.md` |
+| 上游基线 | 四版共同消费 `pi` **v1.5.0** + `pi-web` **v0.15.0**（tags `v1.5.0`/`v0.15.0`）；各封装以 `upstream.lock.json` / `runtime.lock.json` 记录锁定 |
+| `pi-desktop` | 版本 **0.15.0**；Windows 打包态端到端已实测（进程内宿主 / 首屏 / 产物引导 / 品牌化 / 终端 PTY / 原生通知 / 安装-启动-卸载 ✅，见 `docs/构建验证记录.md`）；0.15.0 轮：`smoke-desktop` 10 PASS + 打包态基本功能 e2e **11 PASS**（API KEY → 沙箱凭据 → 沙箱工作区 → 真实文本对话 → 视觉图片对话 → `/api/app-update` currentVersion=0.15.0）+ `probe-renderer` 7 PASS；**macOS / Linux 待验证**；系统托盘视觉呈现 ⬜ 未专项取证 |
+| `pi-desktop-hos` · **Electron on HarmonyOS 版** | 版本 **0.15.0** / `versionCode` **1500**；本轮构建为**签名 HAP**（375.2 MB）并在鸿蒙真机（`HAD-W32` / API 26）验证：启动 / 渲染 / 版本徽标 `web 0.15.0 · pi 1.5.0` / DeepSeek Key（沙箱 `auth.json`，重启仍在）/ 沙箱工作区 / **文本对话** / **图片分析对话**（附件以 `image` 内容类型进入会话，模型识图成功）；工具链 bash + `grep`/`ls` + 内置 git；详见 `docs/真机验证记录.md` 轮次 8；tag `v0.15.0` |
+| `pi-desktop-ark` · **HarmonyOS 版** | 版本 **0.15.0** / `versionCode` **1500**；进程内 Node `v24.2.0`、进程内 Next 服务、ArkWeb 前端、宿主桥、权限/选择器/通知；本轮构建为**签名 HAP**（133.8 MB）并在鸿蒙真机验证：启动 / 渲染 / 版本徽标 `web 0.15.0 · pi 1.5.0` / 设备用例通道 **`model` 2/2**（真实 DeepSeek 非流式 + 流式 SSE，compat）/ **`204-unit` 26/0**；图片对话 ⬜ 待补测；见 `docs/003-真机验证记录-0.15.0.md`；tag `v0.15.0` |
+| `pi-desktop-android` · **Android 版** | 版本 **0.15.0** / `versionCode` **1500**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、6 条幂等补丁；tag `v0.15.0` 经 `.github/workflows/build-release.yml` 构建**签名 APK 并发布 GitHub Release**；**0.15.0 已真机 MIX / Android 8.0.0 验证**：安装启动、WebView UI、版本徽标 `web v0.15.0 · pi v1.5.0`、loopback 免密、DeepSeek Key、沙箱工作区（picker 契约）、文本对话、视觉图片对话（**DeepSeek V4.1 Flash**；V4 Pro 不支持图片）、工具链 bash 四项 + 内置 git 四项，见 `pi-desktop-android/docs/002-真机验证记录.md` |
 | 运行时包 | 鸿蒙：`@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**（ohpm）；安卓：`aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0**（Maven Central） |
 | 上游改动 | 桌面壳 **0 条** · Electron on HarmonyOS 版 **2 条**已登记 · HarmonyOS 版 **6 条** · Android 版 **6 条**幂等补丁 —— 均不 fork 上游源码 |
 | `pi-desktop-website` | 纯静态双页站点（`index.html` / `index_zh.html`，无框架、零外部请求），经 GitHub Actions 部署到 GitHub Pages |
@@ -185,7 +185,7 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | 系统托盘 | ✅ | ➖ | ❌ | ❌ |
 | 外链交系统浏览器 | ✅ | ✅ | ✅ | ✅ |
 | 项目信任门禁 | ✅ | ✅ | ✅ | ✅ |
-| 对 pi-web v0.14.2 补丁数 | 0 | 6 | 2 | 6 |
+| 对 pi-web v0.15.0 补丁数 | 0 | 6 | 2 | 6 |
 
 ## 许可
 
