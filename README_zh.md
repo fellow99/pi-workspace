@@ -150,7 +150,7 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | `pi-desktop` | 版本 **0.15.0**；Windows 打包态端到端已实测（进程内宿主 / 首屏 / 产物引导 / 品牌化 / 终端 PTY / 原生通知 / 安装-启动-卸载 ✅，见 `docs/构建验证记录.md`）；0.15.0 轮：`smoke-desktop` 10 PASS + 打包态基本功能 e2e **11 PASS**（API KEY → 沙箱凭据 → 沙箱工作区 → 真实文本对话 → 视觉图片对话 → `/api/app-update` currentVersion=0.15.0）+ `probe-renderer` 7 PASS；**macOS / Linux 待验证**；系统托盘视觉呈现 ⬜ 未专项取证 |
 | `pi-desktop-hos` · **Electron on HarmonyOS 版** | 版本 **0.15.0** / `versionCode` **1500**；本轮构建为**签名 HAP**（375.2 MB）并在鸿蒙真机（`HAD-W32` / API 26）验证：启动 / 渲染 / 版本徽标 `web 0.15.0 · pi 1.5.0` / DeepSeek Key（沙箱 `auth.json`，重启仍在）/ 沙箱工作区 / **文本对话** / **图片分析对话**（附件以 `image` 内容类型进入会话，模型识图成功）；工具链 bash + `grep`/`ls` + 内置 git；详见 `docs/真机验证记录.md` 轮次 8；tag `v0.15.0` |
 | `pi-desktop-ark` · **HarmonyOS 版** | 版本 **0.15.0** / `versionCode` **1500**；进程内 Node `v24.2.0`、进程内 Next 服务、ArkWeb 前端、宿主桥、权限/选择器/通知；本轮构建为**签名 HAP**（133.8 MB）并在鸿蒙真机验证：启动 / 渲染 / 版本徽标 `web 0.15.0 · pi 1.5.0` / 设备用例通道 **`model` 2/2**（真实 DeepSeek 非流式 + 流式 SSE，compat）/ **`204-unit` 26/0**；图片对话 ⬜ 待补测；见 `docs/003-真机验证记录-0.15.0.md`；tag `v0.15.0` |
-| `pi-desktop-android` · **Android 版** | 版本 **0.15.0** / `versionCode` **1500**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、6 条幂等补丁；tag `v0.15.0` 经 `.github/workflows/build-release.yml` 构建**签名 APK 并发布 GitHub Release**；**0.15.0 已真机 MIX / Android 8.0.0 验证**：安装启动、WebView UI、版本徽标 `web v0.15.0 · pi v1.5.0`、loopback 免密、DeepSeek Key、沙箱工作区（picker 契约）、文本对话、视觉图片对话（**DeepSeek V4.1 Flash**；V4 Pro 不支持图片）、工具链 bash 四项 + 内置 git 四项，见 `pi-desktop-android/docs/002-真机验证记录.md` |
+| `pi-desktop-android` · **Android 版** | 版本 **0.15.0** / `versionCode` **1500**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、6 条幂等补丁（patches/v0.15.0/）；tag `v0.15.0` 构建**签名 APK 并发布 GitHub Release**；**2026-11-07 USB 真机（Mi 11 `8f155833` / Android 11 / 原生 arm64）**：五个真实 CLI 二进制（node/npm/corepack · python/pip · git · uv · pnpm）探针 **10/10**、PTY 终端面板 + Agent bash/ptyBash、DeepSeek Key 经 `/api/auth/api-key`、沙箱工作区、**文本对话「介绍一下你自己」+ 视觉图片对话（deepseek-flash 准确识图）E2E 全过**；`git commit` 本地落库段错误（SELinux 拒应用数据 `link`；原生 arm64 已确认，见 `pi-desktop-android/logs/20261107-1/` 与 node-bridge-workspace `docs/20261107-git问题报告.md`）；历史 0.15.0 轮（MIX / Android 8.0.0）覆盖启动/渲染/徽标/鉴权/工作区，见 `pi-desktop-android/docs/002-真机验证记录.md` |
 | 运行时包 | 鸿蒙：`@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**（ohpm）；安卓：`aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0**（Maven Central） |
 | 上游改动 | 桌面壳 **0 条** · Electron on HarmonyOS 版 **2 条**已登记 · HarmonyOS 版 **6 条** · Android 版 **6 条**幂等补丁 —— 均不 fork 上游源码 |
 | `pi-desktop-website` | 纯静态双页站点（`index.html` / `index_zh.html`，无框架、零外部请求），经 GitHub Actions 部署到 GitHub Pages |
@@ -168,13 +168,13 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | 模型 / Provider / 鉴权 UI | ✅ | ✅ | ✅ | ✅ |
 | 会话持久化与恢复 | ✅ | ✅ | ✅ | ✅ |
 | 会话导出 | ✅ | 🔧 | ⚠️ | 🔧 |
-| 图片附件 / 视觉识图 | ✅ | 🔧 | ✅ | ✅ |
+| 图片附件 / 视觉识图 | ✅ | ✅ | ✅ | ✅ |
 | `read` / `write` / `edit` / `ls` | ✅ | ✅ | ✅ | ✅ |
 | `bash`（顶替 shell） | ✅ | ✅ | ✅ | ✅ |
 | `find` / `grep`（纯 JS 顶替） | ✅ | ✅ | ✅ | ✅ |
-| Git（isomorphic-git 扩展） | ✅ | 🔧 | 🔧 | 🔧 |
-| pnpm（进程内 vendored） | ✅ | 🔧 | ❌ | ❌ |
-| 终端 / PTY 面板 | ✅ | ❌ | ❌ | ❌ |
+| Git（isomorphic-git 扩展） | ✅ | ✅ | 🔧 | 🔧 |
+| pnpm（进程内 vendored） | ✅ | ✅ | ❌ | ❌ |
+| 终端 / PTY 面板 | ✅ | ✅ | ❌ | ❌ |
 | codemode（JS 沙箱） | ✅ | ⬜ | ⚠️ | ❌ |
 | MCP stdio（真实服务器） | ✅ | ⚠️ | ⚠️ | ⚠️ |
 | 目录选择器 | ✅ | ✅ | ✅ | 🔧 |
