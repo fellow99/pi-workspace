@@ -118,7 +118,7 @@ pi-desktop/
 ├── scripts/              # prepare-next / collect-pi / smoke-desktop / pin-upstream / brand-assets / probe-renderer
 ├── config/               # settings.json / mcp.json / trust 模板
 ├── resources/            # 图标、托盘、安装器资源、brand 镜像
-├── specs/                # 子工程规范（011/012/013 + 101–113 + 201）
+├── specs/                # 子工程规范（011/012/013 + 101–113 + 201/202）
 ├── docs/                 # 工程规划 / 发布与更新 / 构建验证记录 / 桌面能力清单
 ├── .github/workflows/    # ci.yml / release.yml
 ├── forge.config.ts
