@@ -1,10 +1,38 @@
 # 013 — 品牌化（branding）跨工程功能规格
 
-> **Module:** branding ｜ **Status:** Implemented（Desktop / HOS / Android）；Partial（Ark） ｜ **Last Updated:** 2026-10-31
+> **Module:** branding ｜ **Status:** Implemented（Desktop / HOS / Android）；Partial（Ark） ｜ **Last Updated:** 2026-11-14（R2）
 > **上游基线:** `pi` v1.2.0 / `pi-web` v0.12.1
 > **适用范围:** 四个子工程；**每个子工程都必须有 `013-branding/`**
 > **物料唯一来源:** 父工程 [`assets/`](../../assets/)（`logo.svg` / `logo.png` / `logo-1024-with-bg.png` / `logo.ico` / `logo.icns`）
 > **父/子分工:** 本文写统一品牌口径与四版落点；脚本、资源位、验收证据写在子工程 `013-branding/`。
+
+---
+
+## R2 — 包名变更（013-branding-r2）
+
+> **需求编号:** `013-branding-r2` ｜ **需求名称:** 包名修改 ｜ **Git 分支:** 不改动 ｜ **日期:** 2026-11-14
+> **适用范围:** `pi-desktop-android` / `pi-desktop-hos` / `pi-desktop-ark`
+> **性质:** 按**产品决策**对技术标识符（包名 / bundleName）做一次性变更；**覆盖**本规格第 §1.1 / §1.3 / FR-013-004 / FR-013-022 中「不改包名」的表述。版本号不变。
+
+### R2.1 新包名
+
+| 子工程 | 旧包名 / bundleName | 新包名 / bundleName |
+|---|---|---|
+| `pi-desktop-android` | `org.fellow99.pi.PiDesktopAndroid` | `top.fellow99.pi.PiDesktopAndroid` |
+| `pi-desktop-hos` | `org.fellow99.pi.PiDesktop` | `top.fellow99.pi.PiDesktopHos` |
+| `pi-desktop-ark` | `org.fellow99.pi.PiDesktopArk` | `top.fellow99.pi.PiDesktopArk` |
+
+### R2.2 影响面
+
+- **Android**：`namespace` / `applicationId` 随之变更；源码包目录 `app/src/main/java/{org→top}/fellow99/pi/PiDesktopAndroid/` 迁移，8 个 `.kt` 的 `package` 声明与内部 `import` 同步更新。
+- **HOS / ARK**：仅变更 `AppScope/app.json5` 的 `bundleName`；HOS 另需同步内部自引用的 `shortcuts_config.json`（`electron` 与 `runtime-overlays/electron` 两处）及 `web_engine/src/main/ets/adapter/*.ets` 4 处 `bundleName` 常量。
+- **规格**：本父规格与三子工程 `specs/013-branding` 同步回写。
+
+### R2.3 约束
+
+- 仅改包名 / bundleName；**不做**其他技术标识符（`pi-web:*`、`PI_WEB_*`、`pi_web_session`、API 路由等）变更。
+- **不改版本号**；三版版本号/versionCode 维持现状。
+- 改动后各子工程**编译构建验证**，确保产物可安装运行。
 
 ---
 
@@ -17,7 +45,7 @@
 - 应用名、窗口标题、页面标题、PWA 名一致；
 - 应用图标、启动图标、托盘/状态栏、favicon、PWA 图标、页面 Logo 来自同一物料；
 - 用户可见的 `Pi Web` 清零；
-- 技术标识符（包名、`pi-web`、`PI_WEB_*`、存储 key、路由）保持不变；
+- 技术标识符（`pi-web`、`PI_WEB_*`、存储 key、路由）保持不变；包名 / bundleName 按 §R2 单独变更；
 - 物料缺失/尺寸/透明度不符时构建失败，不产出半品牌包。
 
 ### 1.2 解决的问题
@@ -42,7 +70,7 @@
 **不包含**
 
 - 修改上游 `pi` / `pi-web` 源码。
-- 改包名 / bundleName（品牌名与应用名一致，包名保留渠道标识）。
+- 改包名 / bundleName（品牌名与应用名一致，包名保留渠道标识）——**R2 起按产品决策变更**，见 §R2。
 - UI 交互设计 / i18n 文案重写（除品牌名）。
 - 官网物料（`pi-desktop-website`）。
 - 代码签名 / 公证。
@@ -67,7 +95,7 @@
 - **FR-013-001**（MUST）：四版用户可见主品牌名必须为 **Pi Desktop**；允许渠道后缀（如 Ark），但 UI 主名必须一致。
 - **FR-013-002**（MUST）：用户可见 `Pi Web` 必须清零；覆盖页面元数据、登录页、hero、侧栏、`document.title`、离线页、PWA manifest、i18n 品牌串、无障碍标签。
 - **FR-013-003**（MUST）：改名必须落在**交付产物**中，不能只改源码或构建脚本。
-- **FR-013-004**（MUST NOT）：不得改技术标识符：包名/bundleName、`pi-web`、`@agegr/pi-web`、`pi-web:*`、`PI_WEB_*`、`pi_web_session`、`PiWeb`、API 路由、SW 缓存前缀。
+- **FR-013-004**（MUST NOT）：不得改技术标识符：`pi-web`、`@agegr/pi-web`、`pi-web:*`、`PI_WEB_*`、`pi_web_session`、`PiWeb`、API 路由、SW 缓存前缀。包名 / bundleName 由 §R2 单独变更管控（FR-013-004 不再涵盖）。
 - **FR-013-005**（MUST）：运行时必须置位 `PI_WEB_APP_NAME=Pi Desktop`，并按平台置位 `PI_WEB_SKIP_VERSION_CHECK=1`（保留当前版本显示）。
 
 ### 3.2 物料与图标
@@ -97,7 +125,7 @@
 - **FR-013-019**（MUST）：品牌化后产物（排除 `node_modules/`）用户可见 `Pi Web` 必须为 0；`Pi Desktop` 必须出现。
 - **FR-013-020**（MUST）：技术标识符替换前后计数必须逐项不变（机器断言）。
 - **FR-013-021**（MUST）：品牌化不得回归启动、会话、对话、工具、文件上传、Git。
-- **FR-013-022**（MUST）：品牌化不得改变版本号/包名（除非产品决策并要求同步 `011`）。
+- **FR-013-022**（MUST）：品牌化不得改变版本号/包名。**R2 例外**：013-branding-r2 已按产品决策变更包名 / bundleName（见 §R2），版本号不变。
 - **FR-013-023**（MUST）：构建必须提供可单独运行的终检命令（`--check` 或等价）。
 
 ---
@@ -125,7 +153,7 @@
 | 页面 Logo | ✅ `logo.svg` | ✅ `logo.svg` | ⬜ 上游 PNG | ✅ `logo.svg` |
 | favicon/PWA | ✅ | ✅ | ⬜ | ✅ |
 | UI 文案 0 残留 | ✅ | ✅ | ✅ | ✅ |
-| 技术标识符不变 | ✅ | ✅ | ✅ | ✅ |
+| 技术标识符不变（包名除外，R2 变更） | ✅ | ✅ | ✅ | ✅ |
 | 版本检测关闭 | ✅ | ✅ | ✅ | ✅ |
 | 物料缺失硬失败 | ✅ | ✅ | ✅ | ✅ |
 | 幂等/终检 | ✅ | ✅ | ✅ | ✅ |
@@ -198,3 +226,4 @@
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | 1.0 | 2026-10-31 | 初版：统一四版品牌口径、落点矩阵与 Ark 未闭合项 |
+| 1.1 | 2026-11-14 | R2：包名变更（android/hos/ark 迁移至 `top.fellow99.pi.*`），覆盖原「不改包名」约束；版本号不变 |
