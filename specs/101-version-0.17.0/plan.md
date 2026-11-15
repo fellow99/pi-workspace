@@ -34,8 +34,14 @@
 - **pi-desktop-android**：build.gradle 1700/0.17.0；assemble-payload 归档 75.8 MB（载荷断言 6 marker 命中）；APK debug 493 MB / release 482 MB，aapt 1700/0.17.0。
 - **pi-desktop-website**：两页 + README 更新至 v0.17.0（Device 复验待后续口径）。
 
-## 3. 待办 / 已知限制
+## 4. 测试
 
-- **签名 HAP 未产出**（本机签名材料缺失；用户指示签名信息有误、真机后再处理）。
-- **鸿蒙/安卓真机复验未执行**（用户明晚安排）。
+- 桌面：`smoke-desktop` 10 PASS + `probe-renderer` 7 PASS（服务端/首屏/会话 SSE/PTY/loopback 可信来源等）。
+- **基本功能（DeepSeek Key / 工作区 / 文本对话 / 图片对话）与端侧能力测试**：按用户安排**留待明日**（安卓 + 鸿蒙真机复验；签名 HAP 一并处理）。
+- 敏感信息：本轮未落盘任何凭证；DeepSeek Key 仅运行期注入。
+
+## 5. 待办 / 已知限制
+
+- 签名 HAP 未产出（本机签名材料缺失；用户指示签名信息有误、真机后再处理）。
+- 鸿蒙/安卓 0.17.0 真机复验未执行（用户明晚安排）。
 - smoke-node22 版本门禁 SKIP（本机无 Node 22.17.x，用 22.23.5 + --allow-any-node 功能验证）。
