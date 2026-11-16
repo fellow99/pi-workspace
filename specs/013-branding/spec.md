@@ -18,9 +18,9 @@
 
 | 子工程 | 旧包名 / bundleName | 新包名 / bundleName |
 |---|---|---|
-| `pi-desktop-android` | `org.fellow99.pi.PiDesktopAndroid` | `top.fellow99.pi.PiDesktopAndroid` |
-| `pi-desktop-hos` | `org.fellow99.pi.PiDesktop` | `top.fellow99.pi.PiDesktopHos` |
-| `pi-desktop-ark` | `org.fellow99.pi.PiDesktopArk` | `top.fellow99.pi.PiDesktopArk` |
+| `pi-desktop-android` | `top.fellow99.pi.PiDesktopAndroid` | `top.fellow99.pi.PiDesktopAndroid` |
+| `pi-desktop-hos` | `top.fellow99.pi.PiDesktopHos` | `top.fellow99.pi.PiDesktopHos` |
+| `pi-desktop-ark` | `top.fellow99.pi.PiDesktopArk` | `top.fellow99.pi.PiDesktopArk` |
 
 ### R2.2 影响面
 

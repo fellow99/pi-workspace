@@ -164,7 +164,7 @@ pi-desktop-ark/
 │   │   ├── host/HostCapabilities.ets
 │   │   └── pages/Index.ets
 │   └── resources/{rawfile,resfile}/
-├── AppScope/app.json5    # org.fellow99.pi.PiDesktopArk / 0.1.0 / 100
+├── AppScope/app.json5    # top.fellow99.pi.PiDesktopArk / 0.1.0 / 100
 ├── payload/
 │   ├── config/           # settings.json / mcp.json
 │   ├── devtest/          # 设备自检套件
@@ -187,7 +187,7 @@ pi-desktop-ark/
 ```
 pi-desktop-android/
 ├── app/src/main/
-│   ├── java/org/fellow99/pi/PiDesktopAndroid/
+│   ├── java/top/fellow99/pi/PiDesktopAndroid/
 │   │   ├── MainActivity.kt
 │   │   ├── PiApplication.kt
 │   │   ├── host/HostCapabilities.kt
