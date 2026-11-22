@@ -186,7 +186,7 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | `pi-desktop-ark` · **HarmonyOS 版** | 版本 **0.18.0** / `versionCode` **1800**；进程内 Node `v24.2.0`、进程内 Next 服务、ArkWeb 前端、宿主桥、权限/选择器/通知；本轮已完成 HAP 构建（签名与真机复验待后续）；0.15.0 已在鸿蒙真机验证：启动 / 渲染 / 版本徽标 / 设备用例通道 **`model` 2/2**（真实 DeepSeek 非流式 + 流式 SSE，compat）/ **`204-unit` 26/0**；图片对话 ⬜ 待补测；见 `docs/003-真机验证记录-0.15.0.md`；tag `v0.18.0` |
 | `pi-desktop-android` · **Android 版** | 版本 **0.18.0** / `versionCode` **1800**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、7 条幂等补丁（`patches/v0.18.0/`）；tag `v0.18.0`；本轮已产出 debug / release APK，设备复验待测试机执行（0.15.0 已完成多端真机验证） |
 | 运行时包 | 鸿蒙：`@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**（ohpm）；安卓：`aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0**（Maven Central） |
-| 上游改动 | 桌面壳 **0 条** · Electron on HarmonyOS 版 **2 条**已登记 · HarmonyOS 版 **6 条** · Android 版 **6 条**幂等补丁 —— 均不 fork 上游源码 |
+| 上游改动 | 桌面壳 **1 条** · Electron on HarmonyOS 版 **4 条**已登记 · HarmonyOS 版 **7 条** · Android 版 **7 条**幂等补丁 —— 均不 fork 上游源码 |
 | `pi-desktop-website` | 纯静态双页站点（`index.html` / `index_zh.html`，无框架、零外部请求），经 GitHub Actions 部署到 GitHub Pages |
 | `pi-agent-hub` · **配套** | 版本 **0.1.2**；多智能体会话汇总中心（hub-service + hub-console + sync-daemon + 5 个 agent 插件 + Tauri 托盘）；汇总 / 只读查看 / 消息下发 / 目录浏览 / 模型信息已端到端实现；导入（`501`）、全文搜索、保留期 GC、审计与 SSE 补发仍待做 |
 | 本仓库 | 双语 README（`README.md` 英文 / `README_zh.md` 中文）+ MIT `LICENSE`；`assets/` 与 `harmonypc-electron-versions/` 为本地普通目录，未入库 |

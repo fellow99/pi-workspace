@@ -10,6 +10,9 @@ deploy/.env
 deploy/config.ini
 .svn
 
+# 本地临时工作区（补丁 rebase 的 detached worktree、构建脚本临时件）
+.tmp/
+
 # Log files
 logs/
 npm-debug.log*
