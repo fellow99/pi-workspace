@@ -68,20 +68,23 @@
 ### 3.2 各工程构建
 
 - **pi-desktop**：version `0.18.0`；`npm run make` 通过，`BUILD_ID = jzNmTY0R2vE5oNxj97v6w`；
-  `Pi Desktop-0.18.0 Setup.exe` / `pi_desktop-0.18.0-full.nupkg` / `Pi Desktop-win32-x64-0.18.0.zip`；
+  `Pi Desktop-0.18.0 Setup.exe`（359,060,480 B）/ `pi_desktop-0.18.0-full.nupkg` / `Pi Desktop-win32-x64-0.18.0.zip`；
   `smoke-desktop` **10 PASS / 0 FAIL**（服务端横幅 `[next] ▲ Next.js 16.4.6`）；
   `probe-renderer` **未执行** —— 本会话宿主进程即运行中的 pi-desktop，带 `--remote-debugging-port` 重启会中断会话，
   转交测试机（`logs/20261122-1/probe.log` 里那次失败的尝试即由此产生，不代表探针本身损坏）。
-- **pi-desktop-hos**：`0.18.0` / `1800`；`prepare-next` BUILD_ID `J85eP85kiaHSlf4B66vUq`（4 补丁应用后回退）；
-  `collect-pi` 归档 154.8 MB；`collect-app` 投放 10 文件（**含 `sync-runtime.js`**，相对 require 完整性 2/2）；
-  HAP 未签名 345 MB，`pack.info` = `1800/0.18.0`。`smoke-node22 --allow-any-node` **8 PASS / 2 SKIP / 0 FAIL**。
-- **pi-desktop-ark**：`0.18.0` / `1800`；`assemble-payload --apply` 归档 80.3 MiB、SHA-256 `7c310b7b…`、
-  7 条补丁标记全命中；归档内 `next=16.4.6` / `pi-coding-agent=1.6.0` / `pi-web=0.18.0`；
-  HAP 未签名 135.7 MB，`pack.info` = `1800/0.18.0`。
-- **pi-desktop-android**：`0.18.0` / `1800`；`assemble-payload --apply` 归档 76.8 MiB、7 条标记全命中；
-  归档内 `next=16.4.6` / `pi-coding-agent=1.6.0` / `pi-web=0.18.0`；
-  `assembleDebug` 482 MB + `assembleRelease` 473 MB，`aapt` = `1800/0.18.0`。
-- **pi-desktop-website**：两页 + README 事实表更新至 `v0.18.0`（补丁数口径 1 / 7 / 4 / 7，列序 Desktop·Android·HOS·Ark）。
+- **pi-desktop-hos**：`0.18.0` / `1800`；`prepare-next` BUILD_ID `3ZUA_5srKiTd0m1W_9t0-`（4 补丁应用后回退，`pi-web 版本 = 0.18.0 ✔`）；
+  `collect-pi` 归档 154.8 MB / SHA-256 `46082e936b9711dcd5350f5aeb09665cc41cd41937c3775aaf4310198a41b2f7`；
+  `collect-app` 投放 10 文件（**含 `sync-runtime.js`**，相对 require 完整性 2/2）；
+  HAP 未签名 **373,841,926 B**，`pack.info` = `1800/0.18.0`，其内嵌 `pi-dist.tar.gz` 的 SHA-256 与 `collect-pi` 一致（`46082e93…`）；
+  `smoke-node22 --allow-any-node` **8 PASS / 2 SKIP / 0 FAIL**（SSE 探针因无真实会话返回 404 而 SKIP）。
+- **pi-desktop-ark**：`0.18.0` / `1800`；`assemble-payload --apply` 归档 **89,651,032 B（85.5 MiB）**、
+  SHA-256 `ed7ee453c300acca20d2318c30c471e3b51a2054be7f824779493569cbd7a0e0`、7 条补丁标记全命中；
+  归档内 `next=16.4.6` / `pi-coding-agent=1.6.0` / `pi-web=0.18.0`；新增「依赖门禁」输出
+  `../pi-web 安装树与 package-lock.json 一致 ✔`；HAP 未签名 **135,696,410 B**，`pack.info` = `1800/0.18.0`。
+- **pi-desktop-android**：`0.18.0` / `1800`；`assemble-payload --apply` 归档 76.8 MiB、7 条标记全命中、
+  依赖门禁通过；归档内 `next=16.4.6` / `pi-coding-agent=1.6.0` / `pi-web=0.18.0`；
+  `assembleDebug` **481,804,405 B** + `assembleRelease` **472,772,159 B**，`aapt` = `1800/0.18.0`。
+  （对比：修复前首轮 release 为 472,772,155 B —— 差异来自载荷内容本身。）
 
 ### 3.3 Code Review 阶段发现并修复的缺陷
 

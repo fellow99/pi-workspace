@@ -27,14 +27,14 @@
 - [x] T2-1 清理 `out/`、`.vite/`、`pi-dist/`、`logs/`
 - [x] T2-2 `package.json` version → `0.18.0`；`pin-upstream.mjs` baseline → pi v1.6.0 / pi-web v0.18.0
 - [x] T2-3 `prepare-next` + `collect-pi` + `make`，产物含 0.18.0
-- [x] T2-4 `smoke-desktop` + `probe-renderer` 全绿
+- [x] T2-4 `smoke-desktop` 10 PASS / 0 FAIL（`probe-renderer` **未执行**：宿主进程即 pi-desktop，带调试端口重启会中断会话 → 转交测试机，见 TC-B-17）
 - [x] T2-5 提交
 
 ### pi-desktop-hos
 - [x] T3-1 清理 `build/`、`.hvigor/`、`oh_modules/`、`pi-dist/`、`pi-dist.tar.gz`、`runtime/`、`logs/`
 - [x] T3-2 `AppScope/app.json5` → versionName `0.18.0` / versionCode `1800`；`prepare-next.mjs` 上游 tag 常量
 - [x] T3-3 `prepare-next` + `collect-pi` + `collect-runtime` + 构建 HAP
-- [x] T3-4 冒烟（`smoke-node22`）
+- [x] T3-4 冒烟（`smoke-node22 --allow-any-node`）：8 PASS / 2 SKIP / 0 FAIL（对**最终**载荷执行；SSE 探针因无真实会话返回 404 而 SKIP）
 - [x] T3-5 提交
 
 ### pi-desktop-ark
