@@ -14,6 +14,9 @@
 > The upstream repositories, the runtimes and the brand material sit side by side as **git submodules plus plain
 > sibling directories**, so the workspace layout reproduces the exact sibling-directory structure each wrapper's build
 > scripts expect (`../pi`, `../pi-web`, `../assets`, `../harmonypc-electron`).
+> The same container also hosts **`pi-agent-hub`**, a companion project — a multi-agent session hub that aggregates,
+> reviews and reaches back into agent sessions across machines. It is **not** a fifth desktop edition and is not part
+> of the wrappers' data plane.
 
 ---
 
@@ -67,6 +70,7 @@ pi-workspace/                       # this repo — submodule container (the par
 ├── pi-desktop-ark/                 # [submodule] Pi Desktop · HarmonyOS Edition (ArkWeb + in-process Node, HAP)
 ├── pi-desktop-android/             # [submodule] Pi Desktop · Android Edition (system WebView + in-process Node, APK)
 ├── pi-desktop-website/             # [submodule] product website of the four editions (static, two pages)
+├── pi-agent-hub/                   # [submodule] pi-agent-hub — multi-agent session hub (aggregate / view / deliver)
 ├── harmonypc-electron/             # [submodule] Electron-on-HarmonyOS runtime (Electron 37.2.3 / Node 22.17.0)
 ├── assets/                         # (plain dir) single source of brand material: logo.* + screenshots/
 ├── harmonypc-electron-versions/    # (plain dir, not in git) runtime release archives + native-module guides
@@ -86,6 +90,7 @@ pi-workspace/                       # this repo — submodule container (the par
 | `@fellow99/node-bridge` + `@fellow99/node-runtime` (ohpm) | In-process Node runtime packages (source: `ohos-node-bridge`) | `pi-desktop-ark` |
 | `aosp-node-bridge` + Maven `node-runtime` | In-process Node runtime for Android (`dlopen libnode.so`) | `pi-desktop-android` |
 | `pi-desktop-website` | Product website of the four editions | — |
+| `pi-agent-hub` | **Multi-agent session hub**: aggregation + read-only viewer + governed prompt delivery | — (independent service; not part of the editions' data plane) |
 | `harmonypc-electron` | Electron-on-HarmonyOS runtime (native SOs + ArkTS shell) | `pi-desktop-hos` only |
 | `assets` | **The single source of brand material**: app icons / window icons / status-bar glyphs / page logo for the wrappers, plus the website's logo and screenshots | all wrappers + the website |
 | `harmonypc-electron-versions` | Runtime release archives (v34 / v37) + material for rebuilding native modules | harmony tooling |
@@ -132,6 +137,39 @@ upstream source fork. Differences are confined to the runtime and platform integ
 packaging form, network binding, platform capability gaps) and are documented by each wrapper's own README and
 `docs/工程规划.md`; the HarmonyOS Edition's runtime contract lives in [`ohos-node-bridge` `docs/000-工程规划.md`](https://github.com/fellow99/ohos-node-bridge/blob/main/docs/000-工程规划.md) §6.
 
+## pi-agent-hub (companion project)
+
+`pi-agent-hub` is an **independent project** living in this container — not another desktop edition, and not part of the
+shared data plane above. Every agent (`pi`, `opencode`, `deepseek-harness`) keeps its own session archive on the
+machine that runs it; `pi-agent-hub` brings all of them into one place so you can **read them in one viewer** and
+**send a prompt back into a chosen session**:
+
+- **Per-machine `sync-daemon` + plugins** — one Node child process per agent adapter reads that agent's own archive
+  (direct storage → agent API → CLI), normalizes it to **pi session format v3** entries, and pushes
+  `manifest → timestamp delta → REST sync` to the hub. A deterministic `hubSessionId` per
+  `(host, agent, native session)` keeps repeated collection idempotent; large payloads travel through a gzip upload
+  stream instead of the JSON body.
+- **`hub-service`** — Express 5 + `node:sqlite`: merges into a pi v3 JSONL mirror (source of truth) with a rebuildable
+  SQLite index, serves the read-only session API, keeps the SSE downlink open and hosts the console build.
+- **`hub-console`** — a self-built Vue 3 SPA (project → `host|agent` → session tree, transcript with tool calls /
+  images / sub-agents, project directory browsing, chat composer). **`pi-web` is not used**: the viewer is implemented
+  in this project.
+- **Governed downlink** — SSE carries `deliver` (text + images + model + thinking level), read-only host directory
+  browsing (`fs_request`) and model-catalog requests to the machine that owns the session; the agent's **own**
+  interface performs the write (pi RPC / pi-web HTTP / opencode HTTP or CLI / dsh RPC) — never by rewriting the archive.
+- **`sync-daemon-tray`** — a Tauri tray (Windows / macOS) that supervises the daemon and edits `sync-daemon.json`;
+  Linux uses `pm2` or a user-level systemd unit.
+
+Deployment is one compose file: `docker compose -f pi-agent-hub/deploy/docker-compose.yml up -d`
+(`hub-service` + `hub-console` + an nginx reverse proxy, SSE buffering disabled).
+
+Current state (**v0.1.2**, MIT, Node ≥ 22.19, 12-package pnpm workspace): session aggregation, the read-only viewer,
+prompt delivery, project-directory browsing and model info are implemented end to end; one-shot session import still
+answers `501`, search is a title/cwd substring match only, and retention GC / audit / SSE replay are open.
+Details: [`pi-agent-hub/README.md`](./pi-agent-hub/README.md) (English) ·
+[`pi-agent-hub/README_zh.md`](./pi-agent-hub/README_zh.md) (Chinese) ·
+[`pi-agent-hub/AGENTS.md`](./pi-agent-hub/AGENTS.md) (agent working rules).
+
 ## Submodules
 
 All entries are recorded in [`.gitmodules`](.gitmodules):
@@ -145,6 +183,7 @@ All entries are recorded in [`.gitmodules`](.gitmodules):
 | `pi-desktop-ark` | https://github.com/fellow99/pi-desktop-ark.git |
 | `pi-desktop-android` | https://github.com/fellow99/pi-desktop-android.git |
 | `pi-desktop-website` | https://github.com/fellow99/pi-desktop-website.git |
+| `pi-agent-hub` | https://github.com/fellow99/pi-agent-hub.git |
 | `harmonypc-electron` | https://github.com/fellow99/harmonypc-electron.git |
 
 ```bash
@@ -172,6 +211,7 @@ To advance the pinned commits, run `git submodule update --remote` and commit th
 | Runtime packages | HarmonyOS: `@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0** (ohpm); Android: `aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0** (Maven Central) |
 | Upstream changes | **0** patches in the desktop shell · **2** registered patches in the Electron on HarmonyOS Edition · **6** idempotent patches in the HarmonyOS Edition · **6** in the Android Edition — no upstream source is forked |
 | `pi-desktop-website` | Static two-page site (`index.html` / `index_zh.html`, no framework, zero external requests), deployed to GitHub Pages via GitHub Actions |
+| `pi-agent-hub` · **companion** | Version **0.1.2**; multi-agent session hub (hub-service + hub-console + sync-daemon + 5 agent plugins + Tauri tray); aggregation / read-only viewer / prompt delivery / project browsing / model info implemented end to end; import (`501`), full-text search, retention GC, audit and SSE replay still open |
 | This repo | Bilingual README (`README.md` English / `README_zh.md` Chinese) + MIT `LICENSE`; `assets/` and `harmonypc-electron-versions/` are local plain directories, untracked |
 
 The authoritative word on capabilities and verification state is each product repo's own documentation — this file is
@@ -214,7 +254,8 @@ A simplified, status-icon view across the four editions. Legend: ✅ implemented
 This repository: [MIT](./LICENSE) © 2026 fellow99.
 
 Each subproject keeps its own license and this repository does not change them: `pi` is MIT (`earendil-works/pi`,
-© 2025 Mario Zechner), `pi-web` is MIT (`agegr/pi-web`, © 2026 agegr), and the wrappers, the website and the runtimes
+© 2025 Mario Zechner), `pi-web` is MIT (`agegr/pi-web`, © 2026 agegr), `pi-agent-hub` is MIT
+(`fellow99/pi-agent-hub`, © 2026 fellow99), and the wrappers, the website and the runtimes
 each carry their own in-repo `LICENSE` (MIT). When reusing content from a subdirectory, that directory's `LICENSE`
 governs.
 

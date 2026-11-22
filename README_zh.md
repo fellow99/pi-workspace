@@ -13,6 +13,8 @@
 > **Pi Desktop · Android 版**（`pi-desktop-android`，系统 WebView + `aosp-node-bridge` 与 Maven Central `node-runtime` 提供的进程内 Node）。
 > 上游仓库、运行时与品牌物料以 **git submodule + 同级普通目录**并列，使本 workspace 的目录结构恰好还原各封装工程
 > 构建脚本所期望的兄弟目录布局（`../pi`、`../pi-web`、`../assets`、`../harmonypc-electron`）。
+> 同一容器里还承载 **`pi-agent-hub`** —— 一个配套工程：把多台机器上各 agent 的会话汇总、只读查看，并能把一条消息
+> 下发回指定会话。它**不是**第五种桌面版别，也不在四个封装的数据面上。
 
 ---
 
@@ -58,6 +60,7 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 ├── pi-desktop-ark/                 # [submodule] Pi Desktop · HarmonyOS 版（ArkWeb + 进程内 Node，HAP）
 ├── pi-desktop-android/             # [submodule] Pi Desktop · Android 版（系统 WebView + 进程内 Node，APK）
 ├── pi-desktop-website/             # [submodule] 四个版别的产品官网（纯静态双页站点）
+├── pi-agent-hub/                   # [submodule] pi-agent-hub —— 多智能体会话汇总 / 查看 / 下发
 ├── harmonypc-electron/             # [submodule] Electron-on-鸿蒙运行时（Electron 37.2.3 / Node 22.17.0）
 ├── assets/                         # （普通目录）品牌物料唯一来源：logo.* + screenshots/
 ├── harmonypc-electron-versions/    # （普通目录，未入库）运行时发行版归档 + 原生模块编译指导
@@ -77,6 +80,7 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 | `@fellow99/node-bridge` + `@fellow99/node-runtime`（ohpm） | 进程内 Node 运行时包（源码：`ohos-node-bridge`） | `pi-desktop-ark` |
 | `aosp-node-bridge` + Maven `node-runtime` | Android 进程内 Node 运行时（`dlopen libnode.so`） | `pi-desktop-android` |
 | `pi-desktop-website` | 四个版别的产品官网 | — |
+| `pi-agent-hub` | **多智能体会话汇总中心**：汇总 + 只读查看 + 受控下发 | —（独立服务；不在四版数据面上） |
 | `harmonypc-electron` | Electron-on-鸿蒙运行时（原生 SO + ArkTS 外壳） | 仅 `pi-desktop-hos` |
 | `assets` | **品牌物料的唯一来源**：各封装的应用图标 / 窗口图标 / 状态栏字形 / 页面 Logo，以及官网的 Logo 与截图 | 全部封装 + 官网 |
 | `harmonypc-electron-versions` | 运行时发行版归档（v34 / v37）+ 原生模块重编译材料 | 仅鸿蒙壳工具链 |
@@ -115,6 +119,35 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 （系统 WebView + `dlopen` 内嵌 Node）。两者都没有 CORS、没有自定义协议、没有登录页、不 fork 上游源码。差异集中在运行时与平台接入（运行时版本、打包形态、网络绑定、平台能力缺口），以各封装自己的 README 与
 `docs/工程规划.md` 为准；HarmonyOS 版的运行时契约见 [`ohos-node-bridge` `docs/000-工程规划.md`](https://github.com/fellow99/ohos-node-bridge/blob/main/docs/000-工程规划.md) §6。
 
+## pi-agent-hub（配套工程）
+
+`pi-agent-hub` 是本容器里的**独立工程** —— 不是又一个桌面版别，也不在上面那条共享数据面上。各 agent（`pi`、`opencode`、
+`deepseek-harness`）把会话存在运行它的那台机器上；`pi-agent-hub` 把它们收到一处，让你**在一个查看器里读完**，
+并能**把一条消息发回指定的会话**：
+
+- **每机一个 `sync-daemon` + 插件** —— 每个 agent 适配器一个 Node 子进程，读该 agent 自己的存档
+  （直读存储 → agent API → CLI），归一为 **pi session format v3** entries，再以
+  `manifest → 时间戳差分 → REST 同步` 上行。每个 `(主机, agent, native 会话)` 的 `hubSessionId` 确定性派生，
+  重复采集天然幂等；大负载走 gzip upload 流而不用塞 JSON body。
+- **`hub-service`** —— Express 5 + `node:sqlite`：合并进 pi v3 JSONL 镜像（事实源）并维护可重建的 SQLite 索引，
+  提供只读会话 API，维持 SSE 下行，并托管 console 构建产物。
+- **`hub-console`** —— 自研 Vue 3 SPA（项目 → `host|agent` → 会话树、带工具调用 / 图片 / 子 agent 的正文、
+  工程目录浏览、聊天框）。**不使用 `pi-web`**：查看器在本工程内实现。
+- **受控下行** —— SSE 把 `deliver`（文本 + 图片 + 模型 + 思考深度）、只读主机目录浏览（`fs_request`）、
+  模型目录请求送到拥有该会话的机器；写入一律由 agent **自身**接口完成（pi RPC / pi-web HTTP / opencode HTTP 或 CLI /
+  dsh RPC），**绝不直接改存档**。
+- **`sync-daemon-tray`** —— Tauri 托盘（Windows / macOS）负责守护 daemon 与编辑 `sync-daemon.json`；
+  Linux 用 `pm2` 或用户级 systemd。
+
+部署只有一份 compose 文件：`docker compose -f pi-agent-hub/deploy/docker-compose.yml up -d`
+（`hub-service` + `hub-console` + nginx 反代，已关 SSE 缓冲）。
+
+当前状态（**v0.1.2**，MIT，Node ≥ 22.19，12 包 pnpm workspace）：会话汇总、只读查看、消息下发、工程目录浏览与
+模型信息已端到端实现；会话导入仍返回 `501`，搜索仅 title/cwd 子串，保留期 GC / 审计 / SSE 补发尚未实现。
+详见 [`pi-agent-hub/README_zh.md`](./pi-agent-hub/README_zh.md)（中文）·
+[`pi-agent-hub/README.md`](./pi-agent-hub/README.md)（英文）·
+[`pi-agent-hub/AGENTS.md`](./pi-agent-hub/AGENTS.md)（Agent 工作规范）。
+
 ## Submodule 清单
 
 全部条目记录在 [`.gitmodules`](.gitmodules)：
@@ -128,6 +161,7 @@ pi-workspace/                       # 本仓库 —— submodule 容器（父工
 | `pi-desktop-ark` | https://github.com/fellow99/pi-desktop-ark.git |
 | `pi-desktop-android` | https://github.com/fellow99/pi-desktop-android.git |
 | `pi-desktop-website` | https://github.com/fellow99/pi-desktop-website.git |
+| `pi-agent-hub` | https://github.com/fellow99/pi-agent-hub.git |
 | `harmonypc-electron` | https://github.com/fellow99/harmonypc-electron.git |
 
 ```bash
@@ -154,6 +188,7 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | 运行时包 | 鸿蒙：`@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**（ohpm）；安卓：`aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0**（Maven Central） |
 | 上游改动 | 桌面壳 **0 条** · Electron on HarmonyOS 版 **2 条**已登记 · HarmonyOS 版 **6 条** · Android 版 **6 条**幂等补丁 —— 均不 fork 上游源码 |
 | `pi-desktop-website` | 纯静态双页站点（`index.html` / `index_zh.html`，无框架、零外部请求），经 GitHub Actions 部署到 GitHub Pages |
+| `pi-agent-hub` · **配套** | 版本 **0.1.2**；多智能体会话汇总中心（hub-service + hub-console + sync-daemon + 5 个 agent 插件 + Tauri 托盘）；汇总 / 只读查看 / 消息下发 / 目录浏览 / 模型信息已端到端实现；导入（`501`）、全文搜索、保留期 GC、审计与 SSE 补发仍待做 |
 | 本仓库 | 双语 README（`README.md` 英文 / `README_zh.md` 中文）+ MIT `LICENSE`；`assets/` 与 `harmonypc-electron-versions/` 为本地普通目录，未入库 |
 
 能力与验证状态的具体口径以**各产品仓内的文档**为准（本文件只做总览，可能与它们存在时差）。
@@ -192,7 +227,8 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 本仓库：[MIT](./LICENSE) © 2026 fellow99。
 
 各子工程各自持有许可，本仓库不改变它们：`pi` 为 MIT（`earendil-works/pi`，© 2025 Mario Zechner）、`pi-web` 为 MIT
-（`agegr/pi-web`，© 2026 agegr），各封装与官网、运行时也各自带有仓内 `LICENSE`（MIT）。
+（`agegr/pi-web`，© 2026 agegr）、`pi-agent-hub` 为 MIT（`fellow99/pi-agent-hub`，© 2026 fellow99），
+各封装与官网、运行时也各自带有仓内 `LICENSE`（MIT）。
 使用某个子目录的内容时，以该目录内的 `LICENSE` 为准。
 
 ## 非官方声明
