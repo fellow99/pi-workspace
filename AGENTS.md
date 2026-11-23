@@ -106,6 +106,30 @@ git submodule update --remote             # 推进钉住的提交（然后提交
 - 修改源码后如有 `npm run check` / 类型检查命令，先跑确保无新增错误再提交。
 - 调试遵循**系统化调试**（先根因调查，严禁在未查明根因前提出修复方案）。
 
+## 六之二、跨工程「依赖版本门禁」铁律（0.18.0 轮 CI 失败沉淀）
+
+> 来源：`pi-desktop-android` CI **run #26 失败** —— 我方新加的门禁拿 `package-lock.json` 逐条比对整棵安装树，
+> 而 CI 用 `pnpm install --lockfile=false` 装 pi-web（上游无 pnpm lock），caret 范围包合法浮动（`^5.2.0` → 5.3.0），
+> 于是把**可用构建**判成失败。
+
+**各工程的 pi-web 依赖安装口径并不相同，写门禁前必须先确认：**
+
+| 工程 | 装 pi-web 依赖 | 安装树 vs `package-lock.json` |
+|---|---|---|
+| `pi-desktop` | `prepare-next.mjs` → `npm ci`（CI 同） | 逐条一致 |
+| `pi-desktop-hos` | `prepare-next.mjs` → `npm ci` | 逐条一致 |
+| `pi-desktop-ark` | `assemble-payload.mjs`（复用 `../pi-desktop-hos/pi-dist`，必要时重编） | 视上游 hos 侧 |
+| `pi-desktop-android` | CI：`pnpm install --lockfile=false`；本地：`npm ci` | **CI 上必然不同** |
+
+**铁律：**
+
+1. 依赖版本门禁**只允许**校验 `pi-web/package.json` 里**精确钉住**的直连依赖（spec 无 `^`/`~`/`*`，当前 19 项：
+   `next@16.4.6`、`@earendil-works/*@1.6.0`、`node-pty`、`undici`、`semver`、`typebox` 等）。
+2. **禁止**用 `package-lock.json` 比对整棵树 / 全量 `node_modules` —— 在 pnpm 非冻结路径上必然误报。
+3. 门禁失败文案要给可执行下一步（`npm ci` 或 CI 的 pnpm 流程），不要只说"不一致"。
+4. 判断「设备/构建环境里有没有某个二进制或版本」时，**必须以被测进程的 uid 与环境为准**，
+   不能用 `hdc shell`（uid 2000）代替 app 内工具（uid 200202xx）—— 同类教训见 `docs/能力对照清单.md` §18.4。
+
 ## 七、提交纪律（Conventional Commits）
 
 - 提交信息 `<type>[可选 scope]: <描述>`；允许 type：`feat`/`fix`/`docs`/`style`/`refactor`/`perf`/`test`/`build`/`ci`/`chore`/`revert`。
