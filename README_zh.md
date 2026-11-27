@@ -44,8 +44,8 @@ CLI / RPC / JSON / SDK 四个集成入口；`Pi Web` 是它的社区浏览器界
 
 各封装只做**装配**：UI 100% 复用上游，不 fork、不改上游源码（依据：`pi-desktop/docs/工程规划.md` §1.1–§1.2、
 `pi-desktop-hos/docs/工程规划.md` §1.1–§1.2、`pi-desktop-ark/docs/000-工程规划.md`）。补丁按**版别**计：桌面壳
-**1 条**、Electron on HarmonyOS 版 **4 条**已登记补丁、HarmonyOS 版以幂等可逆的补丁文件施加
-（`pi-desktop-ark/patches/v0.18.0/`，v0.18.0 时为 **7** 条），Android 版在 `pi-desktop-android/patches/v0.18.0/` 施加同构的 **7** 条幂等补丁。
+**1 条**、Electron on HarmonyOS 版 **3 条**已登记补丁、HarmonyOS 版以幂等可逆的补丁文件施加
+（`pi-desktop-ark/patches/v0.18.0/`，v0.18.0 时为 **6** 条），Android 版在 `pi-desktop-android/patches/v0.18.0/` 施加同构的 **6** 条幂等补丁。
 
 本仓库自身不含产品代码 —— 它是承载这些工程的**容器**，让所有兄弟目录引用在 clone 下来时天然成立。
 
@@ -184,9 +184,9 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | `pi-desktop` | 版本 **0.18.0**；本轮 Windows 打包构建通过、`smoke-desktop` **10 PASS**；`probe-renderer`、打包态 e2e、安装-启动-卸载与 macOS / Linux **待测试机复验**（0.17.0 轮已端到端实测：进程内宿主 / 首屏 / 产物引导 / 品牌化 / 终端 PTY / 原生通知，见 `docs/构建验证记录.md`）；tag `v0.18.0` |
 | `pi-desktop-hos` · **Electron on HarmonyOS 版** | 版本 **0.18.0** / `versionCode` **1800**；本轮已完成 HAP 构建（签名与真机复验待后续）；0.15.0 已在鸿蒙真机（`HAD-W32` / API 26）验证：启动 / 渲染 / 版本徽标 / DeepSeek Key（沙箱 `auth.json`，重启仍在）/ 沙箱工作区 / **文本对话** / **图片分析对话**（附件以 `image` 内容类型进入会话，模型识图成功）；工具链 bash + `grep`/`ls` + 内置 git；详见 `docs/真机验证记录.md` 轮次 8；tag `v0.18.0` |
 | `pi-desktop-ark` · **HarmonyOS 版** | 版本 **0.18.0** / `versionCode` **1800**；进程内 Node `v24.2.0`、进程内 Next 服务、ArkWeb 前端、宿主桥、权限/选择器/通知；本轮已完成 HAP 构建（签名与真机复验待后续）；0.15.0 已在鸿蒙真机验证：启动 / 渲染 / 版本徽标 / 设备用例通道 **`model` 2/2**（真实 DeepSeek 非流式 + 流式 SSE，compat）/ **`204-unit` 26/0**；图片对话 ⬜ 待补测；见 `docs/003-真机验证记录-0.15.0.md`；tag `v0.18.0` |
-| `pi-desktop-android` · **Android 版** | 版本 **0.18.0** / `versionCode` **1800**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、7 条幂等补丁（`patches/v0.18.0/`）；tag `v0.18.0`；本轮已产出 debug / release APK，设备复验待测试机执行（0.15.0 已完成多端真机验证） |
+| `pi-desktop-android` · **Android 版** | 版本 **0.18.0** / `versionCode` **1800**；经 Maven Central `node-runtime` 使用进程内 Node **26.13.0**（small-ICU）、系统 WebView、6 条幂等补丁（`patches/v0.18.0/`）；tag `v0.18.0`；本轮已产出 debug / release APK，设备复验待测试机执行（0.15.0 已完成多端真机验证） |
 | 运行时包 | 鸿蒙：`@fellow99/node-bridge` **0.1.0** + `@fellow99/node-runtime` **24.2.0**（ohpm）；安卓：`aosp-node-bridge` **0.2.0** + `io.github.fellow99:node-runtime` **26.13.0**（Maven Central） |
-| 上游改动 | 桌面壳 **1 条** · Electron on HarmonyOS 版 **4 条**已登记 · HarmonyOS 版 **7 条** · Android 版 **7 条**幂等补丁 —— 均不 fork 上游源码 |
+| 上游改动 | 桌面壳 **1 条** · Electron on HarmonyOS 版 **3 条**已登记 · HarmonyOS 版 **6 条** · Android 版 **6 条**幂等补丁 —— 均不 fork 上游源码 |
 | `pi-desktop-website` | 纯静态双页站点（`index.html` / `index_zh.html`，无框架、零外部请求），经 GitHub Actions 部署到 GitHub Pages |
 | `pi-agent-hub` · **配套** | 版本 **0.1.2**；多智能体会话汇总中心（hub-service + hub-console + sync-daemon + 5 个 agent 插件 + Tauri 托盘）；汇总 / 只读查看 / 消息下发 / 目录浏览 / 模型信息已端到端实现；导入（`501`）、全文搜索、保留期 GC、审计与 SSE 补发仍待做 |
 | 本仓库 | 双语 README（`README.md` 英文 / `README_zh.md` 中文）+ MIT `LICENSE`；`assets/` 与 `harmonypc-electron-versions/` 为本地普通目录，未入库 |
@@ -220,7 +220,7 @@ git submodule update --init --recursive   # 拉取/刷新全部固定版本的 s
 | 系统托盘 | ✅ | ➖ | ❌ | ❌ |
 | 外链交系统浏览器 | ✅ | ✅ | ✅ | ✅ |
 | 项目信任门禁 | ✅ | ✅ | ✅ | ✅ |
-| 对 pi-web v0.18.0 补丁数 | 1 | 7 | 4 | 7 |
+| 对 pi-web v0.18.0 补丁数 | 1 | 6 | 3 | 6 |
 
 ## 许可
 
