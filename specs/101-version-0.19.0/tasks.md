@@ -37,14 +37,14 @@
 - [x] T3-3 `collect-runtime` + `prepare-next`（BUILD_ID `q-l7KIxPhITdBEhOomW4T`）+ `collect-pi`（160.9 MB）+ `collect-app`（9 文件）
 - [x] T3-4 `smoke-node22 --allow-any-node` 8 PASS / 2 SKIP / 0 FAIL
 - [x] T3-5 HAP debug 签名 382,924,600 B，`pack.info` = 1900/0.19.0
-- [ ] T3-6 提交 + tag `v0.19.0`
+- [x] T3-6 提交 + tag `v0.19.0` 并推送（含 review 修复：HAP 内嵌 manifest 0.19.0 + `collect-app` 版本门禁）
 
 ### pi-desktop-ark
 - [x] T4-1 清理 `build/`、`entry/src/main/resources/resfile/pi-web/`
 - [x] T4-2 `AppScope/app.json5` → `0.19.0` / `1900`
 - [x] T4-3 `assemble-payload --apply`（6 补丁往返 + 依赖门禁 + 重编 678 s）→ 归档 85.7 MiB
 - [x] T4-4 载荷标记断言通过；HAP debug 签名 136,077,761 B，`pack.info` = 1900/0.19.0
-- [ ] T4-5 提交 + tag `v0.19.0`
+- [x] T4-5 提交 + tag `v0.19.0` 并推送
 
 ### pi-desktop-android
 - [x] T5-1 清理 `build/`、`app/build/`、`.gradle/`、`app/src/main/assets/pi-web/`
@@ -54,12 +54,12 @@
 - [!] T5-5 装机 **阻塞**：`adb install -r` / `pm install` / `adb_install_need_confirm=0` 全部返回
       `INSTALL_FAILED_USER_RESTRICTED: Install canceled by user`（MIUI「USB 安装」限制，设备端无弹窗）；
       旧包 `org.fellow99.pi.PiDesktopAndroid` 0.15.0 **未卸载**（按用户要求）
-- [ ] T5-6 提交 + tag `v0.19.0`
+- [x] T5-6 提交 + tag `v0.19.0` 并推送 → GitHub Actions `build-release` 成功，Release `Pi Desktop Android v0.19.0` 发布 `pi-desktop-android-v0.19.0.apk`（488,702,899 B）+ `.sha256`
 
 ### pi-desktop-website
 - [x] T6-1 `index.html` / `index_zh.html`：版本号 / versionCode / 补丁数 / 各版状态
 - [x] T6-2 `README.md`：版本矩阵、分发状态、事实表
-- [ ] T6-3 提交 + tag `v0.19.0`
+- [x] T6-3 提交 + tag `v0.19.0` 并推送
 
 ## 阶段 3 — 全局收尾
 
@@ -68,17 +68,17 @@
 - [x] T7-3 `pi-desktop/.github/workflows/{ci,release}.yml`：`PI_REF`/`PI_SHA`/`PI_WEB_REF`/`PI_WEB_SHA`
 - [x] T7-4 `pi-desktop-android/.github/workflows/build-release.yml`：`PI_WEB_TAG`
 - [x] T7-5 父工程 `docs/能力对照清单.md` 新增 §19（本轮测试边界与构建证据）
-- [ ] T7-6 父工程 submodule 指针更新 + 提交 + tag `v0.19.0`
+- [x] T7-6 父工程 submodule 指针更新 + 提交 + tag `v0.19.0` 并推送
 
 ## 阶段 4 — Code Review
 
-- [ ] T8-1 `requesting-code-review`：分派 reviewer（Critical/Important/Minor 分级）
-- [ ] T8-2 产出 `logs/20261127-1/REVIEW_REPORT.md`
-- [ ] T8-3 `receiving-code-review`：逐条核验 → 修 Critical/Important → 复评
-- [ ] T8-4 提交修复
+- [x] T8-1 `requesting-code-review`：分派 reviewer（Critical/Important/Minor 分级）→ 1 Critical / 8 Important / 7 Minor
+- [x] T8-2 产出 `logs/20261127-1/REVIEW_REPORT.md`
+- [x] T8-3 `receiving-code-review`：16 条逐条核验（全部成立）→ 修 1 Critical + 8 Important + 7 Minor → 复评通过
+- [x] T8-4 提交修复（desktop `fix:` / hos `fix:` / ark+android `docs:` / website `docs:` / 父工程随主提交）
 
 ## 阶段 5 — CI 与交接
 
-- [ ] T9-1 观察 `pi-desktop` 的 CI / Release 工作流（tag `v0.19.0` 触发）
-- [ ] T9-2 观察 `pi-desktop-android` 的 `build-release.yml`（tag `v0.19.0` 触发）
-- [ ] T9-3 向用户交付：产物路径、CI 运行链接、安卓装机需用户开启的开关
+- [x] T9-1 `pi-desktop` CI（4 平台）与 Release 均 **success**；Release 发布 12 个资产（含 Windows `Setup.exe` 342,557,696 B / `zip` / `nupkg` / `RELEASES`）
+- [x] T9-2 `pi-desktop-android` `build-release` **success**，Release 已发布 APK + `.sha256`
+- [x] T9-3 交付：CI 运行链接、Release 链接、本地产物路径、安卓装机需在设备上开启「USB 安装」
